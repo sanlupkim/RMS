@@ -109,20 +109,20 @@ def extractStars(img, img_median=None, mask=None, gamma=1.0, max_star_candidates
     diff = ((img_max - img_min) > intensity_threshold_scaled)
     maxima[diff == 0] = 0
 
-    # Apply a border mask
-    border_mask = np.ones_like(maxima)*255
-    border_mask[:border,:] = 0
-    border_mask[-border:,:] = 0
-    border_mask[:,:border] = 0
-    border_mask[:,-border:] = 0
-    maxima = MaskImage.applyMask(maxima, border_mask, image=True)
+    # Apply a border mask. maskImage() fills the masked area with the mean of the rest, which on this
+    # boolean array rounds up to True and makes the masked area one big candidate instead of removing
+    # it, so clear the pixels directly.
+    maxima[:border,:] = False
+    maxima[-border:,:] = False
+    maxima[:,:border] = False
+    maxima[:,-border:] = False
 
     # Remove all detections close to the mask image
     if mask is not None:
         erosion_kernel = np.ones((5, 5), mask.img.dtype)
         mask_eroded = cv2.erode(mask.img, erosion_kernel, iterations=1)
 
-        maxima = MaskImage.applyMask(maxima, mask_eroded, image=True)
+        maxima[mask_eroded == 0] = False
 
 
     # Find and label the maxima
