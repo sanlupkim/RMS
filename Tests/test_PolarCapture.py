@@ -23,10 +23,10 @@ import logging
 import RMS.ConfigReader as cr
 import RMS.StartCapture as sc
 import RMS.Reprocess as rp
-from RMS.Misc import RmsDateTime
+from RMS.Misc import RmsDateTime, switchHorizon
 import Utils.GenerateTimelapse as gt
 from RMS.CaptureModeSwitcher import captureModeAt, polarSessionBoundary, switcherStep, lastNightToDaySwitch, \
-    POLAR_RECHECK_SECONDS, SWITCH_HORIZON_DEG
+    POLAR_RECHECK_SECONDS
 
 
 # StartCapture creates its logger only when run as a script
@@ -79,7 +79,7 @@ def sunIsUp(config, t):
     o.date = ephem.Date(t)
     s = ephem.Sun()
     s.compute(o)
-    return float(s.alt) + float(s.radius) > float(ephem.degrees(SWITCH_HORIZON_DEG))
+    return float(s.alt) + float(s.radius) > float(ephem.degrees(switchHorizon(config)))
 
 
 def simulateSwitcher(config, start, end):

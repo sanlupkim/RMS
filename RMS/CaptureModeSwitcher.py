@@ -7,14 +7,14 @@ from datetime import datetime, timedelta
 import ephem
 import Utils.CameraControl as cc
 from RMS.Logger import getLogger
-from RMS.Misc import RmsDateTime
+from RMS.Misc import RmsDateTime, switchHorizon
 
 # Get the logger from the main module
 log = getLogger("rmslogger")
 
 # Sun altitude (in degrees) that defines the switch point.
 # Negative numbers mean the Sun is below the horizon.
-SWITCH_HORIZON_DEG = "-9"  # Used for continuous capture mode switching
+SWITCH_HORIZON_DEG = "-9"  # Default continuous capture switch point, the config can change it (switchHorizon)
 CAPTURE_HORIZON_DEG = "-5:26"  # Used for standard capture start/stop (matches CaptureDuration.py)
 
 # Buffer time (seconds) to account for capture pipeline shutdown inertia.
@@ -56,7 +56,7 @@ def captureModeAt(config, when_utc):
     o.lat = str(config.latitude)
     o.long = str(config.longitude)
     o.elevation = config.elevation
-    o.horizon = SWITCH_HORIZON_DEG
+    o.horizon = switchHorizon(config)
     o.date = ephem.Date(when_utc)
 
     s = ephem.Sun()
@@ -346,10 +346,10 @@ def lastNightToDaySwitch(config, whenUtc=None):
         whenUtc = RmsDateTime.utcnow()
 
     # Use different horizon based on capture mode:
-    # - Continuous capture: mode switches at -9 degrees
+    # - Continuous capture: mode switches at switch_sun_altitude (-9 degrees by default)
     # - Standard capture: capture ends at -5:26 degrees
     if config.continuous_capture:
-        horizon = SWITCH_HORIZON_DEG
+        horizon = switchHorizon(config)
     else:
         horizon = CAPTURE_HORIZON_DEG
 

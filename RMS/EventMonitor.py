@@ -73,7 +73,7 @@ from Utils.StackFFs import stackFFs
 from Utils.FRbinViewer import view
 from Utils.BatchFFtoImage import batchFFtoImage
 from RMS.CaptureDuration import captureDuration
-from RMS.Misc import sanitise, RmsDateTime, getRmsRootDir, mkdirP, AtomicFlag
+from RMS.Misc import sanitise, RmsDateTime, getRmsRootDir, mkdirP, AtomicFlag, switchHorizon
 from RMS.Formats.FFfile import read
 from matplotlib.dates import DateFormatter
 
@@ -2559,7 +2559,9 @@ class EventMonitor(multiprocessing.Process):
             start_time, duration = captureDuration(self.syscon.latitude,
                                                    self.syscon.longitude,
                                                    self.syscon.elevation,
-                                                   continuous_capture=self.syscon.continuous_capture)
+                                                   continuous_capture=self.syscon.continuous_capture,
+                                                   sun_angle=(switchHorizon(self.syscon)
+                                                              if self.syscon.continuous_capture else None))
 
             if not isinstance(start_time, bool):
 

@@ -45,7 +45,7 @@ import traceback
 import argparse
 
 from RMS.ConfigReader import parse
-from RMS.Misc import niceFormat, isRaspberryPi, sanitise, getRMSStyleFileName, getRmsRootDir, \
+from RMS.Misc import switchHorizon, niceFormat, isRaspberryPi, sanitise, getRMSStyleFileName, getRmsRootDir, \
     UTCFromTimestamp
 from RMS.Misc import runGitCommand, GitCommandTimeout, hostReachable, gitProxyConfigured, gitUrlHost, \
     gitUrlHostAndPort, sanitiseGitUrl, anonymousHttpsGitUrl, GIT_ALLOWED_HOSTS, \
@@ -54,7 +54,6 @@ from RMS.Logger import getLogger
 from RMS.Formats.FFfits import filenameToDatetimeStr
 from RMS.Formats.Platepar import Platepar
 from RMS.CaptureDuration import captureDuration
-from RMS.CaptureModeSwitcher import SWITCH_HORIZON_DEG
 from RMS.Formats.FTPdetectinfo import findFTPdetectinfoFile, readFTPdetectinfo
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -356,7 +355,7 @@ def getObservationDurationContinuous(config, start_time):
     # Initialize sun and observer
     o = ephem.Observer()
     o.lat, o.long, o.elevation  = str(config.latitude), str(config.longitude), config.elevation
-    s, o.horizon, o.date = ephem.Sun(), SWITCH_HORIZON_DEG, start_time
+    s, o.horizon, o.date = ephem.Sun(), switchHorizon(config), start_time
 
     # Is this start time during night time capture hours
     s.compute()

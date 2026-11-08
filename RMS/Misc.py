@@ -1450,6 +1450,25 @@ class RmsDateTime:
             return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
 
+# Sun altitude (degrees) at which continuous capture switches between day and night mode, unless the
+# config sets switch_sun_altitude
+SWITCH_SUN_ALTITUDE_DEFAULT = -9.0
+
+
+def switchHorizon(config):
+    """ Sun altitude at which continuous capture switches between day and night mode.
+
+    Arguments:
+        config: [Config] RMS configuration object. Configs without switch_sun_altitude get the default.
+
+    Return:
+        [str] Altitude in degrees as a string, ready for ephem.Observer.horizon (a float there would be
+            read as radians).
+    """
+
+    return str(float(getattr(config, "switch_sun_altitude", SWITCH_SUN_ALTITUDE_DEFAULT)))
+
+
 class UTCFromTimestamp:
     """Cross-version helper to convert Unix timestamps to naive UTC datetime objects.
 

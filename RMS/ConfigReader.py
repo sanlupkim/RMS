@@ -433,6 +433,9 @@ class Config:
         # Switch camera settings between day/night modes, for when continuous_capture is enabled
         self.switch_camera_modes = False
 
+        # Sun altitude (degrees) at which continuous capture switches between day and night mode
+        self.switch_sun_altitude = -9.0
+
         ##### Upload
 
         # Flag determining if uploading is enabled or not
@@ -1336,6 +1339,10 @@ def parseCapture(config, parser):
     # Load option to switch camera settings between day/night modes, for when continuous_capture is enabled
     if parser.has_option(section, "switch_camera_modes"):
         config.switch_camera_modes = parser.getboolean(section, "switch_camera_modes")
+
+    # Load the Sun altitude at which continuous capture switches between day and night mode
+    if parser.has_option(section, "switch_sun_altitude"):
+        config.switch_sun_altitude = parser.getfloat(section, "switch_sun_altitude")
 
 
 def parseUpload(config, parser):
